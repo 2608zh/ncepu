@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>复试成绩查询系统</title>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background-color: #409eff;
+            color: white;
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        .info-item {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .label {
+            font-weight: bold;
+            width: 100px;
+            margin-right: 15px;
+            text-align: right;
+        }
+        input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            flex-grow: 1;
+            font-size: 14px;
+        }
+        .query-btn {
+            background-color: #67c23a;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 15px;
+            display: block;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            display: none;
+        }
+        .score-table td {
+            padding: 12px;
+            border: 1px solid #e6e6e6;
+        }
+        .score-table tr:nth-child(odd) {
+            background-color: #f8f8f8;
+        }
+        .return-btn {
+            background-color: #909399;
+            color: white;
+            margin-top: 20px;
+        }
+        .error-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+            text-align: center;
+            display: none;
+            z-index: 1000;
+        }
+        .error-message {
+            color: #f56c6c;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        .mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">电力工程系复试成绩查询</div>
+    
+    <!-- 错误提示弹窗 -->
+    <div class="mask" id="mask"></div>
+    <div class="error-modal" id="errorModal">
+        <div class="error-message">考生编号或复试编号或身份证号不正确，请核对后再查询！</div>
+        <button class="query-btn" style="padding: 8px 20px; margin: 0 auto;" onclick="closeError()">确定</button>
+    </div>
+
+    <div class="container" id="formContainer">
+        <div class="info-item">
+            <span class="label">考生编号：</span>
+            <input type="text" id="candidateId">
+        </div>
+        
+        <div class="info-item">
+            <span class="label">复试编号：</span>
+            <input type="text" id="retestId">
+        </div>
+        
+        <div class="info-item">
+            <span class="label">身份证号：</span>
+            <input type="text" id="idCard">
+        </div>
+
+        <button class="query-btn" onclick="checkInput()">查询</button>
+        
+        <table class="score-table" id="scoreTable">
+            <tr>
+                <td>外语听力口语成绩：</td>
+                <td>19</td>
+            </tr>
+            <tr>
+                <td>专业综合面试成绩：</td>
+                <td>82</td>
+            </tr>
+            <tr>
+                <td>专业课笔试成绩：</td>
+                <td>102</td>
+            </tr>
+            <tr>
+                <td>复试总成绩：</td>
+                <td>203</td>
+            </tr>
+        </table>
+        
+        <button class="query-btn return-btn" onclick="showForm()" style="display: none;">返回查询</button>
+    </div>
+
+    <script>
+        function checkInput() {
+            const candidateId = document.getElementById('candidateId').value;
+            const retestId = document.getElementById('retestId').value;
+            const idCard = document.getElementById('idCard').value;
+
+            if (candidateId === '100795000003861' && 
+                retestId === '20250003861' && 
+                idCard === '430723200209220012') {
+                
+                document.querySelectorAll('.info-item').forEach(el => el.style.display = 'none');
+                document.getElementById('scoreTable').style.display = 'table';
+                document.querySelector('.query-btn').style.display = 'none';
+                document.querySelector('.return-btn').style.display = 'block';
+            } else {
+                showError();
+            }
+        }
+
+        function showError() {
+            document.getElementById('mask').style.display = 'block';
+            document.getElementById('errorModal').style.display = 'block';
+            document.getElementById('candidateId').value = '';
+            document.getElementById('retestId').value = '';
+            document.getElementById('idCard').value = '';
+        }
+
+        function closeError() {
+            document.getElementById('mask').style.display = 'none';
+            document.getElementById('errorModal').style.display = 'none';
+        }
+
+        function showForm() {
+            document.querySelectorAll('.info-item').forEach(el => {
+                el.style.display = 'flex';
+                el.querySelector('input').value = '';
+            });
+            document.getElementById('scoreTable').style.display = 'none';
+            document.querySelector('.query-btn').style.display = 'block';
+            document.querySelector('.return-btn').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
